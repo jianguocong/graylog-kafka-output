@@ -4,7 +4,6 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.InstrumentedExecutorService;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricSet;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
@@ -12,7 +11,6 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import kafka.javaapi.consumer.ConsumerConnector;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -25,7 +23,10 @@ import org.graylog2.plugin.LocalMetricRegistry;
 import org.graylog2.plugin.ServerStatus;
 import org.graylog2.plugin.configuration.Configuration;
 import org.graylog2.plugin.configuration.ConfigurationRequest;
-import org.graylog2.plugin.configuration.fields.*;
+import org.graylog2.plugin.configuration.fields.BooleanField;
+import org.graylog2.plugin.configuration.fields.ConfigurationField;
+import org.graylog2.plugin.configuration.fields.NumberField;
+import org.graylog2.plugin.configuration.fields.TextField;
 import org.graylog2.plugin.inputs.MessageInput;
 import org.graylog2.plugin.inputs.MisfireException;
 import org.graylog2.plugin.inputs.annotations.ConfigClass;
@@ -41,8 +42,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -61,7 +64,6 @@ public class KafkaTransport extends ThrottleableTransport {
     private static final String CK_TLS_CLIENT_AUTH_TRUSTED_CERT_FILE = "tls_client_auth_cert_file";
     private static final String CK_TLS_CLIENT_PASSWORD_TRUSTED_STORE = "tls_key_password";
     private static final String CK_SSL_ALLOWED = "ssl_allowed";
-
 
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTransport.class);
@@ -154,7 +156,7 @@ public class KafkaTransport extends ThrottleableTransport {
         // listen for lifecycle changes
         serverEventBus.register(this);
 
-        final Map<String,Object> props = Maps.newHashMap();
+        final Map<String, Object> props = Maps.newHashMap();
         //new prop
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, configuration.getString(CK_BOOTSTRAP_SERVER));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
@@ -170,14 +172,11 @@ public class KafkaTransport extends ThrottleableTransport {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArrayDeserializer");
 
         //ssl section
-        if(isSSL())
-        {
-            props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG,"SSL");
-            props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,String.valueOf(configuration.getString(CK_TLS_CLIENT_AUTH_TRUSTED_CERT_FILE)));
-            props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,String.valueOf(configuration.getString(CK_TLS_CLIENT_PASSWORD_TRUSTED_STORE)));
+        if (isSSL()) {
+            props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+            props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, String.valueOf(configuration.getString(CK_TLS_CLIENT_AUTH_TRUSTED_CERT_FILE)));
+            props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, String.valueOf(configuration.getString(CK_TLS_CLIENT_PASSWORD_TRUSTED_STORE)));
         }
-
-
 
 
         final int numThreads = configuration.getInt(CK_THREADS);
@@ -196,8 +195,7 @@ public class KafkaTransport extends ThrottleableTransport {
     }
 
 
-    private Boolean isSSL()
-    {
+    private Boolean isSSL() {
         Boolean sslAllowed = configuration.getBoolean(CK_SSL_ALLOWED);
         return sslAllowed != null && sslAllowed.booleanValue();
     }
@@ -321,12 +319,12 @@ public class KafkaTransport extends ThrottleableTransport {
     public class KafkaConsumerRunner implements Runnable {
         private final CountDownLatch shutdownLatch;
         private final KafkaConsumer<byte[], byte[]> consumer;
-        private final Map<String,Object> props;
+        private final Map<String, Object> props;
         private final MessageInput input;
         private final String topic;
         private final int poolTimeOut;
 
-        public KafkaConsumerRunner(Map<String,Object> props, MessageInput input, String topic, int poolTimeOut) {
+        public KafkaConsumerRunner(Map<String, Object> props, MessageInput input, String topic, int poolTimeOut) {
             this.props = props;
             this.props.put("client.id", "gl2-" + nodeId + "-" + input.getId() + "-" + randomGenerator.nextInt(100));
             this.input = input;

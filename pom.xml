@@ -4,7 +4,8 @@
     <parent>
         <groupId>org.graylog.plugins</groupId>
         <artifactId>graylog-plugin-parent</artifactId>
-        <version>2.2.3</version>
+<!--        <version>2.2.3</version>-->
+        <version>4.3.9</version>
         <relativePath>../graylog2-server/graylog-plugin-parent</relativePath>
     </parent>
     <prerequisites>
@@ -12,33 +13,33 @@
     </prerequisites>
 
     <groupId>org.graylog.plugins</groupId>
-    <artifactId>graylog-plugin-kafka</artifactId>
+        <artifactId>graylog-plugin-kafka</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>${project.artifactId} plugin.</description>
 
-    <developers>
-        <developer>
-            <name>fbalicchia</name>
-            <email>fbalicchia@gmail.com</email>
-        </developer>
-    </developers>
+<!--    <developers>-->
+<!--        <developer>-->
+<!--            <name>fbalicchia</name>-->
+<!--            <email>fbalicchia@gmail.com</email>-->
+<!--        </developer>-->
+<!--    </developers>-->
 
-    <scm>
-        <connection>scm:git:git@github.com:fbalicchia/graylog-plugin-kafka-inout.git</connection>
-        <developerConnection>scm:git:git@github.com:fbalicchia/graylog-plugin-kafka-inout.git</developerConnection>
-        <url>https://github.com/fbalicchia/graylog-plugin-kafka-inout.git</url>
-        <tag>HEAD</tag>
-    </scm>
+<!--    <scm>-->
+<!--        <connection>scm:git:git@github.com:fbalicchia/graylog-plugin-kafka-inout.git</connection>-->
+<!--        <developerConnection>scm:git:git@github.com:fbalicchia/graylog-plugin-kafka-inout.git</developerConnection>-->
+<!--        <url>https://github.com/fbalicchia/graylog-plugin-kafka-inout.git</url>-->
+<!--        <tag>HEAD</tag>-->
+<!--    </scm>-->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <graylog.version>2.1.1</graylog.version>
-        <kafka.version>0.9.0.1</kafka.version>
+        <graylog.version>4.3.9</graylog.version>
+        <kafka.version>2.7.0</kafka.version>
         <graylog.plugin-dir>/usr/share/graylog-server/plugin</graylog.plugin-dir>
     </properties>
 
@@ -60,24 +61,24 @@
             <version>1.0-rc2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.charithe</groupId>
-            <artifactId>kafka-junit</artifactId>
-            <version>2.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${assertj-core.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.charithe</groupId>-->
+<!--            <artifactId>kafka-junit</artifactId>-->
+<!--            <version>2.3</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.assertj</groupId>-->
+<!--            <artifactId>assertj-core</artifactId>-->
+<!--            <version>${assertj-core.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.mockito</groupId>-->
+<!--            <artifactId>mockito-core</artifactId>-->
+<!--            <version>${mockito.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
@@ -135,7 +136,9 @@
                 <version>2.4.1</version>
                 <configuration>
                     <minimizeJar>false</minimizeJar>
+                    <skipAssembly>package</skipAssembly>
                 </configuration>
+
                 <executions>
                     <execution>
                         <phase>package</phase>
