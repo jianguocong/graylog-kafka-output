@@ -40,6 +40,7 @@ public class KafkaOutput implements MessageOutput {
     public static final String CK_LINGER_MS = "linger_ms";
     public static final String CK_BUFFER_MEMORY = "buffer_memory";
     public static final String CK_TOPIC = "TOPIC";
+    public static final String CK_THREADS = "threads";
 
     private static final String CK_TLS_CLIENT_AUTH_TRUSTED_CERT_FILE = "tls_client_auth_cert_file";
     private static final String CK_TLS_CERT_FILE = "tls_cert_file";
@@ -150,6 +151,24 @@ public class KafkaOutput implements MessageOutput {
                     "localhost:9092",
                     "A list host/port pair used to establishing the initial connection to the Kafka cluster",
                     ConfigurationField.Optional.NOT_OPTIONAL));
+            config.addField(new NumberField(
+                    CK_BATCH_SIZE,
+                    "Batch size",
+                    16384,
+                    "",
+                    ConfigurationField.Optional.NOT_OPTIONAL));
+            config.addField(new NumberField(
+                    CK_LINGER_MS,
+                    "Linger ms",
+                    1,
+                    "",
+                    ConfigurationField.Optional.NOT_OPTIONAL));
+            config.addField(new NumberField(
+                    CK_BUFFER_MEMORY,
+                    "Buffer memory",
+                    33554432,
+                    "",
+                    ConfigurationField.Optional.NOT_OPTIONAL));
             config.addField(new TextField(
                     CK_TOPIC,
                     "Topic",
@@ -168,25 +187,12 @@ public class KafkaOutput implements MessageOutput {
                     0,
                     "Control producer semantics, If request fail can automatically retry",
                     ConfigurationField.Optional.OPTIONAL));
-            config.addField(new NumberField(
-                    CK_BATCH_SIZE,
-                    "Batch size",
-                    16384,
-                    "",
-                    ConfigurationField.Optional.NOT_OPTIONAL));
 
             config.addField(new NumberField(
-                    CK_LINGER_MS,
-                    "Linger ms",
-                    1,
-                    "",
-                    ConfigurationField.Optional.NOT_OPTIONAL));
-
-            config.addField(new NumberField(
-                    CK_BUFFER_MEMORY,
-                    "Buffer memory",
-                    33554432,
-                    "",
+                    CK_THREADS,
+                    "Processor threads",
+                    2,
+                    "Number of processor threads to spawn. Use one thread per Kafka topic partition. if has more node use number_of_thread = number_topic / number_of_node",
                     ConfigurationField.Optional.NOT_OPTIONAL));
 
             config.addField(

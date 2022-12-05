@@ -149,6 +149,7 @@ public class KafkaTransport extends ThrottleableTransport {
 
     @Override
     public void doLaunch(final MessageInput input) throws MisfireException {
+        LOG.info("graylog launch config {}", configuration.serializeToJson());
         serverStatus.awaitRunning(() -> {
             lifecycleStateChange(Lifecycle.RUNNING);
         });
